@@ -90,14 +90,18 @@
         .pay-btn {
             background: #10b981;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
             border-radius: 5px;
             margin-top: 15px;
+            font-weight: bold;
             cursor: pointer;
+            width: 100%;
         }
 
-        #loader { display: none; margin: 20px 0; }
+        .pay-btn:hover {
+            background: #059669;
+        }
     </style>
 </head>
 <body>
@@ -131,18 +135,16 @@
 </div>
 
 <div id="prank-modal">
-    <div class="modal-content" id="modal-box">
-        <h2 style="color: #ef4444;">Limit Reached!</h2>
-        <p>To see the result of this calculation, please pay:</p>
+    <div class="modal-content">
+        <h2 style="color: #ef4444; margin-top: 0;">Subscription Required</h2>
+        <p>To view the result of this calculation, please pay the micro-transaction fee:</p>
         <h1 id="random-price">$0.00</h1>
-        <div id="loader">Processing Fake Payment... 💳</div>
-        <button class="pay-btn" id="pay-btn" onclick="startFakePayment()">Pay Now</button>
+        <button class="pay-btn" onclick="startFakePayment()">Pay Now & Show Result</button>
     </div>
 </div>
 
 <script>
     let display = document.getElementById('display');
-    let useCount = 0;
 
     function appendToDisplay(input) {
         display.value += input;
@@ -157,14 +159,11 @@
     }
 
     function calculate() {
+        if (display.value === "") return;
+        
         try {
-            useCount++;
-            // Trigger prank on 2nd calculation or randomly
-            if (useCount >= 2) {
-                showPrank();
-            } else {
-                display.value = eval(display.value);
-            }
+            // Trigger prank immediately on every calculation
+            showPrank();
         } catch (error) {
             display.value = "Error";
         }
@@ -172,32 +171,22 @@
 
     function showPrank() {
         const modal = document.getElementById('prank-modal');
+        // Generate a random annoying price between $1 and $10
         const price = (Math.random() * (10 - 1) + 1).toFixed(2);
         document.getElementById('random-price').innerText = "$" + price;
         modal.style.display = 'flex';
     }
 
     function startFakePayment() {
-        const btn = document.getElementById('pay-btn');
-        const loader = document.getElementById('loader');
-        const modalBox = document.getElementById('modal-box');
-        
-        btn.style.display = 'none';
-        loader.style.display = 'block';
-
-        setTimeout(() => {
-            loader.innerHTML = "✅ Payment Successful!";
-            setTimeout(() => {
-                document.getElementById('prank-modal').style.display = 'none';
-                // Show real answer after "payment"
-                display.value = eval(display.value);
-                // Reset UI for next time
-                btn.style.display = 'inline-block';
-                loader.style.display = 'none';
-                loader.innerHTML = "Processing Fake Payment... 💳";
-                useCount = 0; // Reset counter
-            }, 1500);
-        }, 2500);
+        // Close modal and show result instantly
+        try {
+            const result = eval(display.value);
+            display.value = result;
+            document.getElementById('prank-modal').style.display = 'none';
+        } catch (e) {
+            display.value = "Error";
+            document.getElementById('prank-modal').style.display = 'none';
+        }
     }
 </script>
 
